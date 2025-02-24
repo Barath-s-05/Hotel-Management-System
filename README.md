@@ -16,16 +16,6 @@ This is a **Hotel Management System** written in Python, designed to handle room
 - **Python 3** (Core Logic)
 - **CLI-based Interface** (Text-based interaction)
 
-## Installation
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/your-username/hotel-management.git
-   cd hotel-management
-   ```
-2. Run the script:
-   ```bash
-   python hotel_management.py
-   ```
 
 ## Usage
 Upon running the script, a menu will appear:
