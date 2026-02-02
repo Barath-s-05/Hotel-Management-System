@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hotel Management</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<h1>🏨 Hotel Management System</h1>
+
+<!-- 🔹 CUSTOMER REGISTRATION -->
+<div class="card" id="registerCard">
+  <h2>Customer Registration</h2>
+  <input id="name" placeholder="Name">
+  <input id="address" placeholder="Address">
+  <input id="checkin" placeholder="Check-in Date">
+  <input id="checkout" placeholder="Check-out Date">
+  <button onclick="createCustomer()">Register</button>
+</div>
+
+<!-- 🔹 DASHBOARD (Hidden initially) -->
+<div id="dashboard" style="display:none;">
+
+  <h2>Welcome! Your Room No: <span id="roomDisplay"></span></h2>
+
+  <div class="card">
+    <h3>Book Room</h3>
+    <input id="room_type" placeholder="Room Type (1-4)">
+    <input id="nights" placeholder="Nights">
+    <button onclick="bookRoom()">Book Room</button>
+  </div>
+
+  <div class="card">
+    <h3>Food</h3>
+    <input id="food_item" placeholder="Item ID (1-5)">
+    <input id="food_qty" placeholder="Qty">
+    <button onclick="addFood()">Add Food</button>
+  </div>
+
+  <div class="card">
+    <h3>Laundry</h3>
+    <input id="laundry_item" placeholder="Item ID (1-5)">
+    <input id="laundry_qty" placeholder="Qty">
+    <button onclick="addLaundry()">Add Laundry</button>
+  </div>
+
+  <div class="card">
+    <h3>Games</h3>
+    <input id="game_item" placeholder="Item ID (1-5)">
+    <input id="game_hours" placeholder="Hours">
+    <button onclick="addGame()">Add Game</button>
+  </div>
+
+  <div class="card">
+    <h3>View Bill</h3>
+    <button onclick="getBill()">Show Bill</button>
+    <pre id="output"></pre>
+  </div>
+
+</div>
+
+<script>
+const API = "http://127.0.0.1:5000";
+let currentRoomNo = null;
+
+function createCustomer() {
+  fetch(`${API}/create_customer`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      name: name.value,
+      address: address.value,
+      checkin: checkin.value,
+      checkout: checkout.value
+    })
+  })
+  .then(r => r.json())
+  .then(d => {
+    currentRoomNo = d.room_no;
+    roomDisplay.textContent = currentRoomNo;
+
+    // Hide registration, show dashboard
+    registerCard.style.display = "none";
+    dashboard.style.display = "block";
+  });
+}
+
+function bookRoom() {
+  fetch(`${API}/book_room`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      room_no: currentRoomNo,
+      room_type: parseInt(room_type.value),
+      nights: parseInt(nights.value)
+    })
+  }).then(() => alert("Room booked"));
+}
+
+function addFood() {
+  fetch(`${API}/add_food`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      room_no: currentRoomNo,
+      item_id: parseInt(food_item.value),
+      qty: parseInt(food_qty.value)
+    })
+  }).then(() => alert("Food added"));
+}
+
+function addLaundry() {
+  fetch(`${API}/add_laundry`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      room_no: currentRoomNo,
+      item_id: parseInt(laundry_item.value),
+      qty: parseInt(laundry_qty.value)
+    })
+  }).then(() => alert("Laundry added"));
+}
+
+function addGame() {
+  fetch(`${API}/add_game`, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      room_no: currentRoomNo,
+      item_id: parseInt(game_item.value),
+      hours: parseInt(game_hours.value)
+    })
+  }).then(() => alert("Game added"));
+}
+
+function getBill() {
+  fetch(`${API}/bill/${currentRoomNo}`)
+  .then(r => r.json())
+  .then(d => output.textContent = JSON.stringify(d, null, 2));
+}
+</script>
+
+</body>
+</html>
